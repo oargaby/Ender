@@ -1,7 +1,3 @@
-// server.js
-
-// set up ======================================================================
-// get all the tools we need
 var express      = require('express');
 var app          = express();
 var server       = require('http').createServer(app);
@@ -17,30 +13,29 @@ var session      = require('express-session');
 var proc         = require('child_process');
 var minecraft    = null;
 
-// configuration ===============================================================
-mongoose.connect('mongodb://127.0.0.1:27017/ender'); // connect to our database
+// config
 
-require('./app/passport')(passport); // pass passport for configuration
+mongoose.connect('mongodb://127.0.0.1:27017/ender');
+
+require('./app/passport')(passport);
 
 app.use(express.static(__dirname + '/public'));
-// set up our express application
-app.use(morgan('dev')); // log every request to the console
-app.use(cookieParser()); // read cookies (needed for auth)
-app.use(bodyParser.json()); // get information from html forms
+app.use(morgan('dev'));
+app.use(cookieParser());
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-app.set('view engine', 'ejs'); // set up ejs for templating
+app.set('view engine', 'ejs');
 
-// required for passport
-app.use(session({ secret: 'gameofthronesthronesthronesgame' })); // session secret
+app.use(session({ secret: 'gameofthronesthronesthronesgame' }));
 app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
-app.use(flash()); // use connect-flash for flash messages stored in session
+app.use(passport.session());
+app.use(flash());
 
-// routes ======================================================================
-require('./app/routes.js')(app, passport); // load our routes and pass in our app and fully configured passport
+// routes
+require('./app/routes.js')(app, passport);
 
-// launch ======================================================================
+// launch
 server.listen(port);
 console.log('Webserver running on Port: ' + port);
 console.log('Minecraft running on Port: ' + 'default');
@@ -50,6 +45,8 @@ minecraft = proc.spawn(
   ['-Xms256M', '-Xmx256M', '-jar', 'minecraft_server.jar', 'nogui'],
   { cwd: __dirname+"/minecraft/" }
 );
+
+//this thrives me out of my mind...
 
 app.post('/deposit', function(req, res) {
   console.log("Deposit from: " + req.user.local.username);
